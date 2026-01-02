@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\VoitureRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,5 +31,20 @@ final class HomeController extends AbstractController
         return $this->render('home/voiture.html.twig', [
             'voiture' => $voiture,
         ]);
+    }
+
+    #[Route('/voiture/{id}/supprimer', name: 'app_voiture_delete', requirements: ['id' => '\d+'])]
+    public function delete(int $id, VoitureRepository $voitureRepository, EntityManagerInterface $entityManager): Response
+    {
+        $voiture = $voitureRepository->find($id);// Récupère la voiture par son ID
+        
+        if (!$voiture) {
+            return $this->redirectToRoute('app_home');
+        }
+        
+        $entityManager->remove($voiture);// Supprime la voiture de la base de données
+        $entityManager->flush();// Exécute la suppression
+        
+        return $this->redirectToRoute('app_home');
     }
 }
