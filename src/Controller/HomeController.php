@@ -17,4 +17,18 @@ final class HomeController extends AbstractController
             'voitures' => $voitures,
         ]);
     }
+
+    #[Route('/voiture/{id}', name: 'app_voiture_detail', requirements: ['id' => '\d+'])]
+    public function detail(int $id, VoitureRepository $voitureRepository): Response
+    {
+        $voiture = $voitureRepository->find($id);// Récupère la voiture par son ID
+        
+        if (!$voiture) {
+            return $this->redirectToRoute('app_home');
+        }
+        
+        return $this->render('home/voiture.html.twig', [
+            'voiture' => $voiture,
+        ]);
+    }
 }
